@@ -237,9 +237,9 @@ function onIntent(intentRequest, session, callback) {
   if (intentName === 'GetLocation') {
     getLocation(intent, session, callback);
   }
-  //if (intentName === 'GetPowerValue') {
+  else if (intentName === 'GetPowerValue') {
   //  getPowerValue(intent, session, callback);
-  //}
+  }
   else if (intentName === 'AMAZON.HelpIntent') {
     getWelcomeResponse(callback);
   } else if (intentName === 'AMAZON.StopIntent' || intentName === 'AMAZON.CancelIntent') {
