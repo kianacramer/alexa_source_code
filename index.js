@@ -56,11 +56,11 @@ function getWelcomeResponse(callback) {
     const cardTitle = 'Welcome';
     const speechOutput = 'Welcome to Ray of Sunshine. '
         + 'Please tell me the location of your system '
-        + 'by saying the city name. For example, you could say, Louisville.';
+        + 'by saying, my location is Louisville.';
     // If the user either does not reply to the welcome message or says something that is not
     // understood, they will be prompted again with this text.
-    const repromptText = 'You can ask me what the power value is.';
-    var shouldEndSession = false;
+    const repromptText = 'Please tell me your location.';
+    const shouldEndSession = false;
 
     callback(sessionAttributes,
         buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
@@ -86,12 +86,11 @@ function getLocation (intent, session, callback) {
   const locationSlot = intent.slots.Location;
   let sessionAttributes = {};
   var repromptText = '';
-  var shouldEndSession = false;
+  const shouldEndSession = false;
   let speechOutput = '';
 
   if (locationSlot) {
       const locationGiven = intent.slots.Location.value;
-      console.log(intent.slots.Location.value);
       sessionAttributes = createLocationAttributes(locationGiven);
       speechOutput = `I now know the location of your system is ${locationGiven} .`
                         + " You can ask me how much power you're "
@@ -148,7 +147,7 @@ function getPowerValue (intent, session, callback) {
     else {
       var powerValue = data.outputs.ac_annual;
       console.log("This is the amount of power your system produces in a year: " + powerValue);
-      speechOutput = `Your power output in ${locationGiven} for the year is: ${powerValue} kilowatt hours in AC.`;
+      speechOutput = `Your power output for the year is: ${powerValue} kilowatt hours in AC.`;
     }
   });
   /*else if (locationGiven === "san diego") {
