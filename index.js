@@ -56,7 +56,7 @@ function getWelcomeResponse(callback) {
     const cardTitle = 'Welcome';
     const speechOutput = 'Welcome to Ray of Sunshine. '
         + 'Please tell me the location of your system '
-        + 'by saying, the location of my system is Louisville.';
+        + 'by saying the city name. For example, you could say, Louisville.';
     // If the user either does not reply to the welcome message or says something that is not
     // understood, they will be prompted again with this text.
     const repromptText = 'You can ask me what the power value is.';
@@ -134,18 +134,24 @@ function getPowerValue (intent, session, callback) {
   var repromptText = null;
   var shouldEndSession = false;
   var speechOutput = '';
+
   var latitudeLongitude = '';
 
-  if (session.attributes) {
-    locationGiven = session.attributes.locationGiven;
-  }
 
-  /*if (locationGiven === "louisville") {
       //Louisville, Kentucky
       //latitudeLongitude = "&lat=38&lon=-86";
-      var url = "https://developer.nrel.gov/api/pvwatts/v5.json?api_key=hUeKIgQuZMkhyIP0MR8pAZ2Ea5HYAt5HuHVff345&lat=38&lon=-86&system_capacity=4&azimuth=180&tilt=40&array_type=1&module_type=1&losses=10&radius=0&timeframe=hourly";
+  var url = "https://developer.nrel.gov/api/pvwatts/v5.json?api_key=hUeKIgQuZMkhyIP0MR8pAZ2Ea5HYAt5HuHVff345&lat=38&lon=-86&system_capacity=4&azimuth=180&tilt=40&array_type=1&module_type=1&losses=10&radius=0&timeframe=hourly";
+  setPowerValue(url, function dataCallBack(err, data) {
+    if (err) {
+      speechOutput = "Sorry, something went wrong.";
     }
-  else if (locationGiven === "san diego") {
+    else {
+      var powerValue = data.outputs.ac_annual;
+      console.log("This is the amount of power your system produces in a year: " + powerValue);
+      speechOutput = `Your power output in ${locationGiven} for the year is: ${powerValue} kilowatt hours in AC.`;
+    }
+  });
+  /*else if (locationGiven === "san diego") {
       //San Diego, California
       url = "https://developer.nrel.gov/api/pvwatts/v5.json?api_key=hUeKIgQuZMkhyIP0MR8pAZ2Ea5HYAt5HuHVff345&lat=38&lon=-86&system_capacity=4&azimuth=180&tilt=40&array_type=1&module_type=1&losses=10&radius=0&timeframe=hourly";
     }
@@ -158,18 +164,8 @@ function getPowerValue (intent, session, callback) {
     speechOutput = "Sorry, I don't recognize the location given.";
   }*/
 
-  var url = "https://developer.nrel.gov/api/pvwatts/v5.json?api_key=hUeKIgQuZMkhyIP0MR8pAZ2Ea5HYAt5HuHVff345&lat=38&lon=-86&system_capacity=4&azimuth=180&tilt=40&array_type=1&module_type=1&losses=10&radius=0&timeframe=hourly";
-    setPowerValue(url, function dataCallBack(err, data) {
-      if (err) {
-        speechOutput = "Sorry, something went wrong.";
-      }
-      else {
-        var powerValue = data.outputs.ac_annual;
-        console.log("This is the amount of power your system produces in a year: " + powerValue);
-        speechOutput = `Your power output in ${locationGiven} for the year is: ${powerValue} kilowatt hours in AC.`;
-        shouldEndSession = true;
-      }
-  });
+  //var url = "https://developer.nrel.gov/api/pvwatts/v5.json?api_key=hUeKIgQuZMkhyIP0MR8pAZ2Ea5HYAt5HuHVff345&lat=38&lon=-86&system_capacity=4&azimuth=180&tilt=40&array_type=1&module_type=1&losses=10&radius=0&timeframe=hourly";
+
 
   callback(sessionAttributes, buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
 }
@@ -238,7 +234,7 @@ function onIntent(intentRequest, session, callback) {
     getLocation(intent, session, callback);
   }
   else if (intentName === 'GetPowerValue') {
-  //  getPowerValue(intent, session, callback);
+    getPowerValue(intent, session, callback);
   }
   else if (intentName === 'AMAZON.HelpIntent') {
     getWelcomeResponse(callback);
