@@ -56,7 +56,7 @@ function getWelcomeResponse(callback) {
     const cardTitle = 'Welcome';
     const speechOutput = 'Welcome to Ray of Sunshine. '
         + 'Please tell me the location of your system '
-        + 'by saying, Louisville.';
+        + 'by saying, the location of my system is Louisville.';
     // If the user either does not reply to the welcome message or says something that is not
     // understood, they will be prompted again with this text.
     const repromptText = 'You can ask me what the power value is.';
@@ -93,7 +93,7 @@ function getLocation (intent, session, callback) {
       const locationGiven = intent.slots.Location.value;
       console.log(intent.slots.Location.value);
       sessionAttributes = createLocationAttributes(locationGiven);
-      speechOutput = `I now know your location is ${locationGiven} .`
+      speechOutput = `I now know the location of your system is ${locationGiven} .`
                         + " You can ask me how much power you're "
                         + "producing in this location.";
     }
@@ -127,36 +127,37 @@ function setPowerValue(url, doCallBack) {
   });
 }
 
-/*function getPowerValue (intent, session, callback) {
+function getPowerValue (intent, session, callback) {
   let locationGiven;
   const cardTitle = intent.name;
-  const locationSlot = intent.slots.Location;
   var sessionAttributes = {};
   var repromptText = null;
   var shouldEndSession = false;
   var speechOutput = '';
   var latitudeLongitude = '';
 
-  /*if (locationGiven === "Louisville, Kentucky") {
+  if (session.attributes) {
+    locationGiven = session.attributes.locationGiven;
+  }
+
+  /*if (locationGiven === "louisville") {
       //Louisville, Kentucky
       //latitudeLongitude = "&lat=38&lon=-86";
       var url = "https://developer.nrel.gov/api/pvwatts/v5.json?api_key=hUeKIgQuZMkhyIP0MR8pAZ2Ea5HYAt5HuHVff345&lat=38&lon=-86&system_capacity=4&azimuth=180&tilt=40&array_type=1&module_type=1&losses=10&radius=0&timeframe=hourly";
     }
-  else if (locationGiven === "San Diego, California") {
+  else if (locationGiven === "san diego") {
       //San Diego, California
-      var url = "https://developer.nrel.gov/api/pvwatts/v5.json?api_key=hUeKIgQuZMkhyIP0MR8pAZ2Ea5HYAt5HuHVff345&lat=38&lon=-86&system_capacity=4&azimuth=180&tilt=40&array_type=1&module_type=1&losses=10&radius=0&timeframe=hourly";
+      url = "https://developer.nrel.gov/api/pvwatts/v5.json?api_key=hUeKIgQuZMkhyIP0MR8pAZ2Ea5HYAt5HuHVff345&lat=38&lon=-86&system_capacity=4&azimuth=180&tilt=40&array_type=1&module_type=1&losses=10&radius=0&timeframe=hourly";
     }
-  else if (locationGiven === "Nashville, Tennessee") {
+  else if (locationGiven === "nashville") {
       //Nashville, Tennessee
       //latitudeLongitude = "&lat=36&lon=-87";
-      var url = "https://developer.nrel.gov/api/pvwatts/v5.json?api_key=hUeKIgQuZMkhyIP0MR8pAZ2Ea5HYAt5HuHVff345&lat=38&lon=-86&system_capacity=4&azimuth=180&tilt=40&array_type=1&module_type=1&losses=10&radius=0&timeframe=hourly";
+      url = "https://developer.nrel.gov/api/pvwatts/v5.json?api_key=hUeKIgQuZMkhyIP0MR8pAZ2Ea5HYAt5HuHVff345&lat=38&lon=-86&system_capacity=4&azimuth=180&tilt=40&array_type=1&module_type=1&losses=10&radius=0&timeframe=hourly";
     }
   else {
     speechOutput = "Sorry, I don't recognize the location given.";
-  }
+  }*/
 
-  locationGiven = locationSlot.value;
-  sessionAttributes = createLocationAttributes(locationGiven);
   var url = "https://developer.nrel.gov/api/pvwatts/v5.json?api_key=hUeKIgQuZMkhyIP0MR8pAZ2Ea5HYAt5HuHVff345&lat=38&lon=-86&system_capacity=4&azimuth=180&tilt=40&array_type=1&module_type=1&losses=10&radius=0&timeframe=hourly";
     setPowerValue(url, function dataCallBack(err, data) {
       if (err) {
@@ -171,7 +172,7 @@ function setPowerValue(url, doCallBack) {
   });
 
   callback(sessionAttributes, buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
-}*/
+}
 
 /*
 function createDateAttribute(dateGiven) {
