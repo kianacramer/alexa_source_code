@@ -10,7 +10,19 @@ module.exports = {
 					'tilt': 40, 'array_type': 1, 'module_type': 1, 'losses': 10, 'radius': 0, 'timeframe': 'hourly'}			
 
 		return request({url: api_url, qs: parameters})
+	},
+
+	powerForMonth: function(month, solarData){
+		   dateIndex = new Date(Date.parse(month + " 1, 2012")).getMonth() 
+		   return solarData.outputs.ac_monthly[dateIndex]
+	},
+
+	powerForDate: function(date, solarData){
+		   dateIndex = new Date(Date.parse(date)).getMonth() 
+		   console.log(dateIndex)
+		   return solarData.outputs.ac_monthly[dateIndex]
 	}
+
 }
 
 
