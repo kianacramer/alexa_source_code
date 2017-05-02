@@ -10,6 +10,8 @@ capable of producing in the future.
 
 //required for API usage
 var https = require('https');
+//url for pvwatts API
+//var url = "https://developer.nrel.gov/api/pvwatts/v5.json?api_key=hUeKIgQuZMkhyIP0MR8pAZ2Ea5HYAt5HuHVff345&lat=38&lon=-86&system_capacity=4&azimuth=180&tilt=40&array_type=1&module_type=1&losses=10&radius=0&timeframe=hourly";
 
 //YOU WILL NEED TO RUN 'npm install request-promise' before using the below module
 //I wrote this module to use promises
@@ -19,11 +21,7 @@ var https = require('https');
 //  .then(function(response){
 //      DO SOMETHING WITH RESPONSE!!!!! 
 //   }); 
-var solar = require('./solar-panel-api')
-
-//url for pvwatts API
-//var url = "https://developer.nrel.gov/api/pvwatts/v5.json?api_key=hUeKIgQuZMkhyIP0MR8pAZ2Ea5HYAt5HuHVff345&lat=38&lon=-86&system_capacity=4&azimuth=180&tilt=40&array_type=1&module_type=1&losses=10&radius=0&timeframe=hourly";
-
+var solar = require('./solar-panel-api');
 
 /**************************************************************/
 ///////////////// HELPER FUNCTIONS /////////////////////////////
@@ -101,7 +99,7 @@ function getLocation (intent, session, callback) {
   let speechOutput = '';
 
   if (intent.slots.Location) {
-    var locationGiven = intent.slots.Location.value;
+    const locationGiven = intent.slots.Location.value;
     sessionAttributes = createLocationAttributes(locationGiven);
     speechOutput = `I now know the location of your system is ${locationGiven}. You can ask me how much power you're `
                       + "producing in this location.";
@@ -110,8 +108,7 @@ function getLocation (intent, session, callback) {
     speechOutput = "I'm not sure what your location is. Try again.";
   }
 
-    callback(sessionAttributes,
-       buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
+  callback(sessionAttributes, buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
 }
 
 //SET POWER VALUE FUNCTION
@@ -144,9 +141,17 @@ function getPowerValue (intent, session, callback) {
   var shouldEndSession = false;
   var speechOutput = '';
 
-  //Louisville, Kentucky
-  //latitudeLongitude = "&lat=38&lon=-86";
-  var url = "https://developer.nrel.gov/api/pvwatts/v5.json?api_key=hUeKIgQuZMkhyIP0MR8pAZ2Ea5HYAt5HuHVff345&lat=38&lon=-86&system_capacity=4&azimuth=180&tilt=40&array_type=1&module_type=1&losses=10&radius=0&timeframe=hourly";
+  if (session.attributes) {
+    locationGiven = session.attributes.locationGiven;
+  }
+
+  solar.solarPanelDataRequest(address)
+    .then(function(response) {
+      console.log(response);
+      speechOutput = `This is your location: ${locationGiven}.`;
+    });
+    
+  //var url = "https://developer.nrel.gov/api/pvwatts/v5.json?api_key=hUeKIgQuZMkhyIP0MR8pAZ2Ea5HYAt5HuHVff345&lat=38&lon=-86&system_capacity=4&azimuth=180&tilt=40&array_type=1&module_type=1&losses=10&radius=0&timeframe=hourly";
   setPowerValue(url, function dataCallBack(err, data) {
     if (err) {
       speechOutput = "Sorry, something went wrong.";
@@ -154,7 +159,7 @@ function getPowerValue (intent, session, callback) {
     else {
       var powerValue = data.outputs.ac_annual;
       console.log("This is the amount of power your system produces in a year: " + powerValue);
-      speechOutput = `Your power output for the year is: ${powerValue} kilowatt hours in AC.`;
+      speechOutput = `Your power output for the year in ${locationGiven} is: ${powerValue} kilowatt hours in AC.`;
       callback(sessionAttributes, buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
     }
   });
