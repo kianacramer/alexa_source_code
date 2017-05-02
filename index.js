@@ -10,6 +10,17 @@ capable of producing in the future.
 
 //required for API usage
 var https = require('https');
+
+//YOU WILL NEED TO RUN 'npm install request-promise' before using the below module
+//I wrote this module to use promises
+//use as follows: 
+//
+//solar.solarPanelDataRequest(address)
+//  .then(function(response){
+//      DO SOMETHING WITH RESPONSE!!!!! 
+//   }); 
+var solar = require('./solar-panel-api')
+
 //url for pvwatts API
 //var url = "https://developer.nrel.gov/api/pvwatts/v5.json?api_key=hUeKIgQuZMkhyIP0MR8pAZ2Ea5HYAt5HuHVff345&lat=38&lon=-86&system_capacity=4&azimuth=180&tilt=40&array_type=1&module_type=1&losses=10&radius=0&timeframe=hourly";
 
