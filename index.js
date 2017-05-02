@@ -148,7 +148,7 @@ function getPowerValue (intent, session, callback) {
   solar.solarPanelDataRequest(address)
     .then(function(response) {
       console.log(response);
-      speechOutput = `This is your location: ${locationGiven}.`;
+      speechOutput = `This is your location: ${address}.`;
     });
     
   //var url = "https://developer.nrel.gov/api/pvwatts/v5.json?api_key=hUeKIgQuZMkhyIP0MR8pAZ2Ea5HYAt5HuHVff345&lat=38&lon=-86&system_capacity=4&azimuth=180&tilt=40&array_type=1&module_type=1&losses=10&radius=0&timeframe=hourly";
