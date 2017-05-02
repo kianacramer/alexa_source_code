@@ -13,6 +13,7 @@ var https = require('https');
 //url for pvwatts API
 //var url = "https://developer.nrel.gov/api/pvwatts/v5.json?api_key=hUeKIgQuZMkhyIP0MR8pAZ2Ea5HYAt5HuHVff345&lat=38&lon=-86&system_capacity=4&azimuth=180&tilt=40&array_type=1&module_type=1&losses=10&radius=0&timeframe=hourly";
 
+
 /**************************************************************/
 ///////////////// HELPER FUNCTIONS /////////////////////////////
 /**************************************************************/
@@ -83,22 +84,20 @@ function createLocationAttributes(locationGiven) {
 
 function getLocation (intent, session, callback) {
   const cardTitle = intent.name;
-  const locationSlot = intent.slots.Location;
   let sessionAttributes = {};
   var repromptText = '';
   const shouldEndSession = false;
   let speechOutput = '';
 
-  if (locationSlot) {
-      const locationGiven = intent.slots.Location.value;
-      sessionAttributes = createLocationAttributes(locationGiven);
-      speechOutput = `I now know the location of your system is ${locationGiven} .`
-                        + " You can ask me how much power you're "
-                        + "producing in this location.";
-    }
-    else {
-      speechOutput = "I'm not sure what your location is. Try again.";
-    }
+  if (intent.slots.Location) {
+    var locationGiven = intent.slots.Location.value;
+    sessionAttributes = createLocationAttributes(locationGiven);
+    speechOutput = `I now know the location of your system is ${locationGiven}. You can ask me how much power you're `
+                      + "producing in this location.";
+  }
+  else {
+    speechOutput = "I'm not sure what your location is. Try again.";
+  }
 
     callback(sessionAttributes,
        buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
@@ -107,8 +106,8 @@ function getLocation (intent, session, callback) {
 //SET POWER VALUE FUNCTION
 function setPowerValue(url, doCallBack) {
   https.get(url, function(response) {
-    var buffer = "",
-        data;
+    var buffer = "";
+    var data;
     response.on("data", function (chunk) {
         buffer += chunk;
     });
@@ -134,11 +133,8 @@ function getPowerValue (intent, session, callback) {
   var shouldEndSession = false;
   var speechOutput = '';
 
-  var latitudeLongitude = '';
-
-
-      //Louisville, Kentucky
-      //latitudeLongitude = "&lat=38&lon=-86";
+  //Louisville, Kentucky
+  //latitudeLongitude = "&lat=38&lon=-86";
   var url = "https://developer.nrel.gov/api/pvwatts/v5.json?api_key=hUeKIgQuZMkhyIP0MR8pAZ2Ea5HYAt5HuHVff345&lat=38&lon=-86&system_capacity=4&azimuth=180&tilt=40&array_type=1&module_type=1&losses=10&radius=0&timeframe=hourly";
   setPowerValue(url, function dataCallBack(err, data) {
     if (err) {
@@ -148,25 +144,11 @@ function getPowerValue (intent, session, callback) {
       var powerValue = data.outputs.ac_annual;
       console.log("This is the amount of power your system produces in a year: " + powerValue);
       speechOutput = `Your power output for the year is: ${powerValue} kilowatt hours in AC.`;
+      callback(sessionAttributes, buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
     }
   });
-  /*else if (locationGiven === "san diego") {
-      //San Diego, California
-      url = "https://developer.nrel.gov/api/pvwatts/v5.json?api_key=hUeKIgQuZMkhyIP0MR8pAZ2Ea5HYAt5HuHVff345&lat=38&lon=-86&system_capacity=4&azimuth=180&tilt=40&array_type=1&module_type=1&losses=10&radius=0&timeframe=hourly";
-    }
-  else if (locationGiven === "nashville") {
-      //Nashville, Tennessee
-      //latitudeLongitude = "&lat=36&lon=-87";
-      url = "https://developer.nrel.gov/api/pvwatts/v5.json?api_key=hUeKIgQuZMkhyIP0MR8pAZ2Ea5HYAt5HuHVff345&lat=38&lon=-86&system_capacity=4&azimuth=180&tilt=40&array_type=1&module_type=1&losses=10&radius=0&timeframe=hourly";
-    }
-  else {
-    speechOutput = "Sorry, I don't recognize the location given.";
-  }*/
-
-  //var url = "https://developer.nrel.gov/api/pvwatts/v5.json?api_key=hUeKIgQuZMkhyIP0MR8pAZ2Ea5HYAt5HuHVff345&lat=38&lon=-86&system_capacity=4&azimuth=180&tilt=40&array_type=1&module_type=1&losses=10&radius=0&timeframe=hourly";
 
 
-  callback(sessionAttributes, buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
 }
 
 /*
@@ -237,7 +219,8 @@ function onIntent(intentRequest, session, callback) {
   }
   else if (intentName === 'AMAZON.HelpIntent') {
     getWelcomeResponse(callback);
-  } else if (intentName === 'AMAZON.StopIntent' || intentName === 'AMAZON.CancelIntent') {
+  }
+  else if (intentName === 'AMAZON.StopIntent' || intentName === 'AMAZON.CancelIntent') {
     handleSessionEndRequest(callback);
   }
   /*else if (intentName === 'GetPowerValueAtDate') {
