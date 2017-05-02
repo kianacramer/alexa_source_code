@@ -15,12 +15,12 @@ var https = require('https');
 
 //YOU WILL NEED TO RUN 'npm install request-promise' before using the below module
 //I wrote this module to use promises
-//use as follows: 
+//use as follows:
 //
 //solar.solarPanelDataRequest(address)
 //  .then(function(response){
-//      DO SOMETHING WITH RESPONSE!!!!! 
-//   }); 
+//      DO SOMETHING WITH RESPONSE!!!!!
+//   });
 var solar = require('./solar-panel-api');
 
 /**************************************************************/
@@ -134,7 +134,8 @@ function setPowerValue(url, doCallBack) {
 }
 
 function getPowerValue (intent, session, callback) {
-  let locationGiven;
+  var locationGiven;
+  var userAddress;
   const cardTitle = intent.name;
   var sessionAttributes = {};
   var repromptText = null;
@@ -145,26 +146,26 @@ function getPowerValue (intent, session, callback) {
     locationGiven = session.attributes.locationGiven;
   }
 
-  solar.solarPanelDataRequest(address)
-    .then(function(response) {
-      console.log(response);
-      speechOutput = `This is your location: ${address}.`;
-    });
-    
-  //var url = "https://developer.nrel.gov/api/pvwatts/v5.json?api_key=hUeKIgQuZMkhyIP0MR8pAZ2Ea5HYAt5HuHVff345&lat=38&lon=-86&system_capacity=4&azimuth=180&tilt=40&array_type=1&module_type=1&losses=10&radius=0&timeframe=hourly";
-  setPowerValue(url, function dataCallBack(err, data) {
-    if (err) {
-      speechOutput = "Sorry, something went wrong.";
-    }
-    else {
-      var powerValue = data.outputs.ac_annual;
-      console.log("This is the amount of power your system produces in a year: " + powerValue);
-      speechOutput = `Your power output for the year in ${locationGiven} is: ${powerValue} kilowatt hours in AC.`;
-      callback(sessionAttributes, buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
-    }
-  });
+  if (locationGiven) {
+    solar.solarPanelDataRequest(address)
+      .then(function(response) {
+        console.log(response);
+        speechOutput = `This is your location: ${response}.`;
+      });
 
-
+    //var url = "https://developer.nrel.gov/api/pvwatts/v5.json?api_key=hUeKIgQuZMkhyIP0MR8pAZ2Ea5HYAt5HuHVff345&lat=38&lon=-86&system_capacity=4&azimuth=180&tilt=40&array_type=1&module_type=1&losses=10&radius=0&timeframe=hourly";
+    /*setPowerValue(url, function dataCallBack(err, data) {
+      if (err) {
+        speechOutput = "Sorry, something went wrong.";
+      }
+      else {
+        var powerValue = data.outputs.ac_annual;
+        console.log("This is the amount of power your system produces in a year: " + powerValue);
+        speechOutput = `Your power output for the year in ${response} is: ${powerValue} kilowatt hours in AC.`;
+        callback(sessionAttributes, buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
+      }
+    });*/
+  }
 }
 
 /*
