@@ -1,0 +1,54 @@
+INTENT SCHEMA
+{
+  "intents": [
+    {
+      "intent": "GetPowerValue",
+      "slots": [
+        {
+          "name": "Location",
+          "type": "AMAZON.US_CITY"
+        }
+      ]
+    },
+    {
+      "slots": [
+        {
+          "name": "Location",
+          "type": "AMAZON.US_CITY"
+        }
+      ],
+      "intent": "GetLocation"
+    },
+    {
+      "intent": "GetPowerValueAtDate",
+      "slots": [
+        {
+          "name": "Date",
+          "type": "AMAZON.DATE"
+        }
+      ]
+    },
+    {
+      "intent": "AMAZON.HelpIntent"
+    },
+    {
+      "intent": "AMAZON.StopIntent"
+    }
+  ]
+}
+
+SAMPLE UTTERANCES
+GetPowerValue what is the power value at {Location}
+GetPowerValue what is my power value in {Location}
+GetPowerValue how much power am I producing in {Location}
+GetPowerValue yes
+GetPowerValue how much power is my system producing in {Location}
+GetPowerValue what is the power value of my system at {Location}
+GetLocation {Location}
+GetLocation my location is {Location}
+GetLocation location is {Location}
+GetLocation location of {Location}
+GetLocation located at {Location}
+GetLocation located in {Location}
+GetPowerValueAtDate what is my power value for {Date}
+GetPowerValueAtDate what is the power value for {Date}
