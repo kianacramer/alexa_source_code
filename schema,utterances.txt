@@ -47,12 +47,12 @@ INTENT SCHEMA
 }
 
 SAMPLE UTTERANCES
-GetPowerValue what is the power value at {Location}
-GetPowerValue what is my power value in {Location}
-GetPowerValue how much power am I producing in {Location}
+GetPowerValue what is the power value at {Location} for the year
+GetPowerValue what is my power value in {Location} for the year
+GetPowerValue how much power am I producing in {Location} for the year
 GetPowerValue yes
-GetPowerValue how much power is my system producing in {Location}
-GetPowerValue what is the power value of my system at {Location}
+GetPowerValue how much power is my system producing in {Location} in a year
+GetPowerValue what is the power value of my system at {Location} in a year
 GetLocation {Location}
 GetLocation my location is {Location}
 GetLocation location is {Location}
@@ -60,6 +60,6 @@ GetLocation location of {Location}
 GetLocation located at {Location}
 GetLocation located in {Location}
 GetPowerValueAtDate what is my power value for {Date}
-GetPowerValueAtDate what is the power value for {Date}
+GetPowerValueAtDate what is the power value for {Date}              
 GetPowerValueAtMonth what is the power value for {Month}
 GetPowerValueAtMonth what is my power value for {Month}
