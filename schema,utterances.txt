@@ -2,13 +2,13 @@ INTENT SCHEMA
 {
   "intents": [
     {
-      "intent": "GetPowerValue",
       "slots": [
         {
           "name": "Location",
           "type": "AMAZON.US_CITY"
         }
-      ]
+      ],
+      "intent": "GetPowerValue"
     },
     {
       "slots": [
@@ -20,13 +20,22 @@ INTENT SCHEMA
       "intent": "GetLocation"
     },
     {
-      "intent": "GetPowerValueAtDate",
       "slots": [
         {
           "name": "Date",
           "type": "AMAZON.DATE"
         }
-      ]
+      ],
+      "intent": "GetPowerValueAtDate"
+    },
+    {
+    "slots": [
+        {
+          "name": "Month",
+          "type": "AMAZON.Month"
+        }
+      ],
+      "intent": "GetPowerValueAtMonth"
     },
     {
       "intent": "AMAZON.HelpIntent"
@@ -52,3 +61,5 @@ GetLocation located at {Location}
 GetLocation located in {Location}
 GetPowerValueAtDate what is my power value for {Date}
 GetPowerValueAtDate what is the power value for {Date}
+GetPowerValueAtMonth what is the power value for {Month}
+GetPowerValueAtMonth what is my power value for {Month}
