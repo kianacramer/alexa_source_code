@@ -10,8 +10,6 @@ capable of producing in the future.
 
 //required for API usage
 var https = require('https');
-//url for pvwatts API
-//var url = "https://developer.nrel.gov/api/pvwatts/v5.json?api_key=hUeKIgQuZMkhyIP0MR8pAZ2Ea5HYAt5HuHVff345&lat=38&lon=-86&system_capacity=4&azimuth=180&tilt=40&array_type=1&module_type=1&losses=10&radius=0&timeframe=hourly";
 
 //YOU WILL NEED TO RUN 'npm install request-promise' before using the below module
 //I wrote this module to use promises
@@ -102,7 +100,8 @@ function getLocation (intent, session, callback) {
     const locationGiven = intent.slots.Location.value;
     sessionAttributes = createLocationAttributes(locationGiven);
     speechOutput = `I now know the location of your system is ${locationGiven}. You can ask me how much power you're `
-                      + "producing in this location.";
+                      + `producing in ${locationGiven}.`;
+    repromptText = `You can ask me how much power you're producing in ${locationGiven}.`;
   }
   else {
     speechOutput = "I'm not sure what your location is. Try again.";
@@ -132,44 +131,61 @@ function getPowerValue (intent, session, callback) {
     });
 }
 
-function createDateAttributes(dateGiven) {
+
+function createDateAttributes(date) {
   return {
-    dateGiven,
+    date,
   };
 }
 
-function createMonthAttributes(monthGiven) {
+function createMonthAttributes(month) {
   return {
-    monthGiven,
+    month,
   };
 }
 
 function getPowerValueAtDate (intent, session, callback) {
+  var locationGiven, date;
   var shouldEndSession = false;
   var repromptText = null;
   var speechOutput = '';
   var cardTitle = intent.name;
-  const dateSlot = intent.slots.Date;
-  setPowerValue(url, function dataCallBack(err, data) {
-    if (dateGiven) {
-      const dateGiven = dateSlot.value;
-      sessionAttributes = createDateAttributes(dateGiven);
-      var powerValue = data.outputs.ac_monthly;
+  var sessionAttributes = {};
+  date = intent.slots.Date.value;
 
-      console.log("This is the amount of power: " + counter);
-      speechOutput = `Your power output is: ${counter} kWhac`;
-    }
-    else if (err) {
-      speechOutput = "I'm sorry, I couldn't tell you your power output.";
-    }
-    else {
-      speechOutput = "I'm not sure what your location is. Try again.";
-      repromptText = "I'm not sure what your location is."
-                        + "You can tell me your location by saying, "
-                        + "My location is Louisville, Kentucky.";
-    }
-    callback({}, buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
-  })
+  if (session.attributes) {
+    locationGiven = session.attributes.locationGiven;
+  }
+
+  solar.solarPanelDataRequest(locationGiven)
+    .then(function(response) {
+      var responseData = JSON.parse(response);
+      var powerValue = solar.powerForDate(date, responseData);
+      speechOutput = `Your power output for ${date} in ${locationGiven} is: ${powerValue} kilowatt hours in AC.`;
+      callback(sessionAttributes, buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
+    });
+}
+
+function getPowerValueAtMonth (intent, session, callback) {
+  var locationGiven, month;
+  var shouldEndSession = false;
+  var repromptText = null;
+  var speechOutput = '';
+  var cardTitle = intent.name;
+  var sessionAttributes = {};
+  month = intent.slots.Month.value;
+
+  if (session.attributes) {
+    locationGiven = session.attributes.locationGiven;
+  }
+
+  solar.solarPanelDataRequest(locationGiven)
+    .then(function(response) {
+      var responseData = JSON.parse(response);
+      var powerValue = solar.powerForMonth(month, responseData);
+      speechOutput = `Your power output for ${month} in ${locationGiven} is: ${powerValue} kilowatt hours in AC.`;
+      callback(sessionAttributes, buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
+    });
 }
 
 /**************************************************************/
@@ -199,15 +215,18 @@ function onIntent(intentRequest, session, callback) {
   else if (intentName === 'GetPowerValue') {
     getPowerValue(intent, session, callback);
   }
+  else if (intentName === 'GetPowerValueAtDate') {
+    getPowerValueAtDate(intent, session, callback);
+  }
+  else if (intentName === 'GetPowerValueAtMonth') {
+    getPowerValueAtMonth(intent, session, callback);
+  }
   else if (intentName === 'AMAZON.HelpIntent') {
     getWelcomeResponse(callback);
   }
   else if (intentName === 'AMAZON.StopIntent' || intentName === 'AMAZON.CancelIntent') {
     handleSessionEndRequest(callback);
   }
-  /*else if (intentName === 'GetPowerValueAtDate') {
-    getPowerValueAtDate(intent, session, callback);
-  }*/
   else {
     throw new Error("INVALID");
   }
