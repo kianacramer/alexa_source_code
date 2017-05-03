@@ -234,9 +234,6 @@ function onIntent(intentRequest, session, callback) {
 
 function onSessionEnded(sessionEndedRequest, session) {
     console.log(`onSessionEnded requestId=${sessionEndedRequest.requestId}, sessionId=${session.sessionId}`);
-    //function exitSkill(options, err) {
-      //add garbage collection
-    //}
 }
 
 
