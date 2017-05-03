@@ -111,28 +111,6 @@ function getLocation (intent, session, callback) {
   callback(sessionAttributes, buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
 }
 
-//SET POWER VALUE FUNCTION
-function setPowerValue(url, doCallBack) {
-  https.get(url, function(response) {
-    var buffer = "";
-    var data;
-    response.on("data", function (chunk) {
-        buffer += chunk;
-    });
-    response.on("end", function() {
-      data = JSON.parse(buffer);
-      if(data.error) {
-        doCallBack(new Error(data.error));
-      }
-      else {
-        doCallBack(null, data);
-      }
-    });
-  }).on('error', function(err) {
-    doCallBack(new Error(err.message));
-  });
-}
-
 function getPowerValue (intent, session, callback) {
   var locationGiven;
   const cardTitle = intent.name;
@@ -145,33 +123,24 @@ function getPowerValue (intent, session, callback) {
     locationGiven = session.attributes.locationGiven;
   }
 
-  //if (locationGiven) {
-  solar.solarPanelDataRequest(address)
+  solar.solarPanelDataRequest(locationGiven)
     .then(function(response) {
-      console.log(response);
-      userAddress = locationGiven;
-      speechOutput = `This is your location: ${response}.`;
+      var responseData = JSON.parse(response);
+      var powerValue = responseData.outputs.ac_annual;
+      speechOutput = `Your power output for the year in ${locationGiven} is: ${powerValue} kilowatt hours in AC.`;
+      callback(sessionAttributes, buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
     });
-
-    //var url = "https://developer.nrel.gov/api/pvwatts/v5.json?api_key=hUeKIgQuZMkhyIP0MR8pAZ2Ea5HYAt5HuHVff345&lat=38&lon=-86&system_capacity=4&azimuth=180&tilt=40&array_type=1&module_type=1&losses=10&radius=0&timeframe=hourly";
-    /*setPowerValue(url, function dataCallBack(err, data) {
-      if (err) {
-        speechOutput = "Sorry, something went wrong.";
-      }
-      else {
-        var powerValue = data.outputs.ac_annual;
-        console.log("This is the amount of power your system produces in a year: " + powerValue);
-        speechOutput = `Your power output for the year in ${response} is: ${powerValue} kilowatt hours in AC.`;
-        callback(sessionAttributes, buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
-      }
-    });*/
-
 }
 
-/*
-function createDateAttribute(dateGiven) {
+function createDateAttributes(dateGiven) {
   return {
     dateGiven,
+  };
+}
+
+function createMonthAttributes(monthGiven) {
+  return {
+    monthGiven,
   };
 }
 
@@ -179,18 +148,14 @@ function getPowerValueAtDate (intent, session, callback) {
   var shouldEndSession = false;
   var repromptText = null;
   var speechOutput = '';
-  var url = "https://developer.nrel.gov/api/pvwatts/v5.json?api_key=hUeKIgQuZMkhyIP0MR8pAZ2Ea5HYAt5HuHVff345&lat=38&lon=-86&system_capacity=4&azimuth=180&tilt=40&array_type=1&module_type=1&losses=10&radius=0&timeframe=hourly";
   var cardTitle = intent.name;
   const dateSlot = intent.slots.Date;
   setPowerValue(url, function dataCallBack(err, data) {
     if (dateGiven) {
       const dateGiven = dateSlot.value;
-      sessionAttributes = createLocationAttributes(locationGiven);
+      sessionAttributes = createDateAttributes(dateGiven);
       var powerValue = data.outputs.ac_monthly;
-      for (var i = 0; i < powerValue.length; i++) {
-        var counter = powerValue[i];
-        console.log(counter);
-      }
+
       console.log("This is the amount of power: " + counter);
       speechOutput = `Your power output is: ${counter} kWhac`;
     }
@@ -205,7 +170,7 @@ function getPowerValueAtDate (intent, session, callback) {
     }
     callback({}, buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
   })
-}*/
+}
 
 /**************************************************************/
 //                          EVENTS
